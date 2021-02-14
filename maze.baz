@@ -1,117 +1,93 @@
-REM  cxxxxxx|\\\\\\\\\\\\\\\\\\\\\\\\\>
+rem
+REM cxxxxxx|/////////////////////////>
 REM 
-REM  MAZE   - DRAWS A MAZE-LIKE PATTERN
-REM  AUTHOR - BILL CHATFIELD
+REM MAZE   - DRAWS A MAZE-LIKE PATTERN
+REM AUTHOR - BILL CHATFIELD
 REM 
-REM  cxxxxxx|\\\\\\\\\\\\\\\\\\\\\\\\\>
-REM 
-REM  //////////////
-REM  INITIALIZATION
-REM  //////////////
-LET SW = 560: LET SH = 192: REM  SCREEN WIDTH AND HEIGHT
-LET W = 10: LET H = 5: REM  DEFAULT SEGMENT DIMENSIONS
-LET KBD =  - 16384: REM  ADDRESS OF KEYPRESS DETECTION BYTE
-LET MF =  - 16302: REM  HGR MIXEDOFF
-LET RL = 78:RH = 79: REM  RNDL AND RNDH
-LET SEED =  PEEK (RL) +  PEEK (RH) * 256: REM  GET RND SEED
-LET NA =  RND ( - SEED): REM  SEED RANDOM NUM GENERATOR
-DIM COLOURS(5): REM  ARRAY FOR 6 COLORS NUM'D 0-5
-REM  USELESS COLORS SKIPPED: BLACK2=4, WHITE1=3
-LET COLOURS(0) = 1: REM  GREEN
-LET COLOURS(1) = 2: REM  VIOLET
-LET COLOURS(2) = 5: REM  ORANGE
-LET COLOURS(3) = 6: REM  BLUE
-LET COLOURS(4) = 7: REM  WHITE2
-LET COLOURS(5) = 0: REM  BLACK1
-LET PAUSED = 0
-HOME 
-GOSUB 1000: REM  INSTRUCTIONS
-REM  //////////////////////////
-REM  OUTER SCREEN PRINTING LOOP
-REM  //////////////////////////
-&  HGR2 : & MODE(1): REM  SWITCH TO FULL SCREEN DOUBLE HIGH RES
-LET BG =  INT ( RND (1) * 2): REM  BLACK OR COLORED BG
-IF BG = 0 THEN FG = COLOURS( INT ( RND (1) * 6))
-IF BG = 1 THEN BG = COLOURS( INT ( RND (1) * 6)):FG = 0
-IF FG = BG THEN 300: REM  DON'T LET THEM BE THE SAME
-LET FG = 1:BG = 0
-PRINT "FG=";FG;" BG=";BG
-& B COLOR= BG
-&  CLEAR : REM  DRAW BG.K
-&  HCOLOR= FG
-LET X1 = 0:Y1 = 0: REM  RESET TO TOP LEFT
-LET W =  INT ( RND (1) * 10) + 20: REM  RANDOM SEGMENT WIDTH
-LET H =  INT ( RND (1) * 10) + 8: REM  RANDOM SEGMENT HEIGHT
-REM  ///////////////////////////
-REM  INNER SEGMENT PRINTING LOOP
-REM  ///////////////////////////
-REM 512
-IF  PEEK (KBD) > 127 THEN 600: REM  DETECTS A KEYPRESS
-LET X2 = X1 + W:Y2 = Y1 + H: REM  RIGHT END OF SEGMENT
-REM  DETECTS END OF LINE
-IF X2 >  = SW THEN X1 = 0:X2 = X1 + W:Y1 = Y1 + H:Y2 = Y1 + H
-IF Y2 >  = SH THEN 300: REM  DETECTS BOTTOM OF SCREEN
-LET N =  INT ( RND (1) * 2): REM  SELECT A / OR \ SEGMENT
-IF N = 0 THEN  &  HPLOT X1,Y2 TO X2,Y1: REM  DRAW A /
-IF N = 1 THEN  &  HPLOT X1,Y1 TO X2,Y2: REM  DRAW A \
-LET X1 = X1 + W: REM  ADVANCE LEFT END OF SEGMENT
-GOTO 512: REM  LOOP TO NEXT SEGMENT
-REM  ///////////
-REM  KEY HANDLER
-REM  ///////////
-REM 600
-GET KEY$
-IF KEY$ =  CHR$ (27) THEN 700: REM  ESC QUITS
-IF KEY$ = "Q" OR KEY$ = "q" THEN 700: REM  Q QUITS ALSO
-IF KEY$ =  CHR$ (13) THEN 300: REM  RETURN ADVANCES SCREEN
-REM  TAB AND ARROW KEYS ALSO ADVANCE SCREEN
-IF  CHR$ (8) <  = KEY$ AND KEY$ <  =  CHR$ (11) THEN 300
-IF KEY$ =  CHR$ (21) THEN 300
-IF KEY$ =  CHR$ (32) AND PAUSED = 0 THEN PAUSED = 1: GOTO 630
-IF KEY$ =  CHR$ (32) AND PAUSED = 1 THEN PAUSED = 0: GOTO 512
-GOTO 512: REM  UNRECOGNIZED KEY SO JUST CONTINUE
-REM 630
-IF  PEEK (KBD) <  = 127 THEN 630: REM  PAUSE
-GOTO 600: REM  CHECK THE KEY THAT UNPAUSED
-&  TEXT 
+REM cxxxxxx|/////////////////////////>
+rem
+
+
+REM //////////////
+REM Init
+REM //////////////
+let ret$ = chr$(13)
+let esc$ = chr$(27)
+LET SW = 140 : SH = 192: REM SCREEN WIDTH AND HEIGHT
+LET KBD =  -16384: REM Addr of byte that is neg if key pressed
+LET RL = 78 : RH = 79: REM RNDL AND RNDH
+LET SEED =  PEEK (RL) +  PEEK (RH) * 256: REM GET RND SEED
+LET NA =  RND ( - SEED): REM SEED RANDOM NUM GENERATOR
+HOME
+VTAB 24
+& HGR2 : REM FULL SCREEN DOUBLE HIGH RES
+& MODE(2) : REM 16-color mode
+
+
+REM //////////////////////////
+REM Draw Screen
+REM //////////////////////////
+£drawScreen
+LET BG =  0: rem Black
+let fg = int(rnd(1)*15) +1: rem Gives 1 to 15
+& BCOLOR=BG
+& CLEAR : REM Draw background
+& HCOLOR=FG
+let s = int(rnd(1) * 5) + 4: REM Gives 4 to 8
+let s = 8
+LET W = s
+LET H = s
+PRINT "W=";W;" H=";H;" FG=";FG;" BG=";BG
+
+
+REM ///////////////////////////
+REM Draw Segment
+REM ///////////////////////////
+£drawSegments
+let mx = (int(sw / w) - 1) * w
+let my = (int(sh / h) - 1) * h
+for y1 = 0 to my step h
+  let y2 = y1 + h
+  for x1 = 0 to mx step w
+    if peek(kbd) > 127 then gosub @checkKeypress
+    let x2 = x1 + w
+    let T =  INT ( RND (1) * 2): REM Segment type
+    gosub @drawSegment
+  next
+  let x2 = sw - 1
+  let dy = int((x2 - x1) * h / w)
+  let T =  INT ( RND (1) * 2): REM Segment type
+  let yb = y1: rem Backup y1
+  if t = 0 then y1 = y2 - dy
+  if t = 1 then y2 = y1 + dy
+  gosub @drawSegment
+  let y1 = yb: rem Restore y1
+next
+GOTO @drawScreen
+
+
+£drawSegment
+IF T = 0 THEN  &  HPLOT X1,Y2 TO X2,Y1
+IF T = 1 THEN  &  HPLOT X1,Y1 TO X2,Y2
+return
+
+
+REM //////////////////////////
+REM KEY HANDLER
+REM //////////////////////////
+£checkKeypress
+get KEY$
+if key$ = " " then pop : goto @drawScreen
+if key$ = esc$ then pop : goto @exit
+if key$ = ret$ then pop : goto @drawScreen
+return
+
+
+rem ////////////////
+rem Exit
+rem ////////////////
+£exit
+& TEXT 
 PRINT "MAZE TERMINATED";
-END 
-REM  ////////////
-REM  INSTRUCTIONS
-REM  ////////////
-VTAB 18
-PRINT "KEYBOARD COMMANDS:"
-PRINT "-----------------"
-PRINT "ESC, Q              = QUIT"
-PRINT "TAB, ARROWS, RETURN = NEXT SCREEN"
-PRINT "SPACEBAR            = PAUSE/RESUME"
-PRINT 
-PRINT "PRESS ANY KEY TO CONTINUE";
-GET KEY$
-HOME : VTAB 24
-RETURN 
-REM  ///////////
-REM  FILL SCREEN
-REM  ///////////
-FOR Y = 0 TO SH - 1
-HPLOT 0,Y TO SW - 1,Y
-NEXT 
-RETURN 
-REM                 c==o
-REM               _/____\_
-REM        _.,--'" ||^ || "`z._
-REM       /_/^ ___\||  || _/o\ "`-._
-REM     _/  ]. L_| || .||  \_/_  . _`--._
-REM    /_~7  _ . " ||. || /] \ ]. (_)  . "`--.
-REM   |__7~.(_)_ []|+--+|/____T_____________L|
-REM   |__|  _^(_) /^   __\____ _   _|
-REM   |__| (_){_) J ]K{__ L___ _   _]
-REM   |__| . _(_) \v     /__________|________
-REM   l__l_ (_). []|+-+-<\^   L  . _   - ---L|
-REM    \__\    __. ||^l  \Y] /_]  (_) .  _,--'
-REM      \~_]  L_| || .\ .\\/~.    _,--'"
-REM       \_\ . __/||  |\  \`-+-<'"
-REM         "`---._|J__L|X o~~|[\\      "Millenium Falcon"
-REM   -Row         \____/ \___|[//      Modified Corellian
-REM                 `--'   `--+-'       YT-1300 Transport (1)
-]
+END
+
