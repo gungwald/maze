@@ -11,6 +11,7 @@ rem
 REM //////////////
 REM Init
 REM //////////////
+let d$ = chr$(4)
 let ret$ = chr$(13)
 let esc$ = chr$(27)
 LET SW = 140 : SH = 192: REM SCREEN WIDTH AND HEIGHT
@@ -19,7 +20,7 @@ LET RL = 78 : RH = 79: REM RNDL AND RNDH
 LET SEED =  PEEK (RL) +  PEEK (RH) * 256: REM GET RND SEED
 LET NA =  RND ( - SEED): REM SEED RANDOM NUM GENERATOR
 HOME
-VTAB 24
+print d$;"-dhgr" : rem Load Double Hi-res driver
 & HGR2 : REM FULL SCREEN DOUBLE HIGH RES
 & MODE(2) : REM 16-color mode
 
@@ -28,15 +29,14 @@ REM //////////////////////////
 REM Draw Screen
 REM //////////////////////////
 £drawScreen
-LET BG =  0: rem Black
-let fg = int(rnd(1)*15) +1: rem Gives 1 to 15
+let BG =  0: rem Black
+let fg = int(rnd(1) * 15) + 1: rem Gives 1 to 15
 & BCOLOR=BG
 & CLEAR : REM Draw background
 & HCOLOR=FG
 let s = int(rnd(1) * 5) + 4: REM Gives 4 to 8
-let s = 8
-LET W = s
-LET H = s
+let W = s
+let H = s
 PRINT "W=";W;" H=";H;" FG=";FG;" BG=";BG
 
 
@@ -53,16 +53,18 @@ for y1 = 0 to my step h
     let x2 = x1 + w - 1
     let T =  INT(RND(1) * 2): REM Segment type
     gosub @drawSegment
-  next
+  next x1
+  if x1 >= sw then @skipShortSegment
   let x2 = sw - 1
   let dy = int((x2 - x1 + 1) * h / w) - 1
-  let T =  INT(RND(1) * 2): REM Segment type
+  let t = int(rnd(1) * 2): REM Segment type
   let yb = y1: rem Backup y1
   if t = 0 then y1 = y2 - dy
   if t = 1 then y2 = y1 + dy
   gosub @drawSegment
   let y1 = yb: rem Restore y1
-next
+  £skipShortSegment
+next y1
 GOTO @drawScreen
 
 
@@ -88,6 +90,7 @@ rem Exit
 rem ////////////////
 £exit
 & TEXT 
-PRINT "MAZE TERMINATED";
+print "Maze terminated."
+print "Run -FP before running Maze again to clear memory";
 END
 
