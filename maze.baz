@@ -47,16 +47,16 @@ REM ///////////////////////////
 let mx = (int(sw / w) - 1) * w
 let my = (int(sh / h) - 1) * h
 for y1 = 0 to my step h
-  let y2 = y1 + h
+  let y2 = y1 + h - 1
   for x1 = 0 to mx step w
     if peek(kbd) > 127 then gosub @checkKeypress
-    let x2 = x1 + w
-    let T =  INT ( RND (1) * 2): REM Segment type
+    let x2 = x1 + w - 1
+    let T =  INT(RND(1) * 2): REM Segment type
     gosub @drawSegment
   next
   let x2 = sw - 1
-  let dy = int((x2 - x1) * h / w)
-  let T =  INT ( RND (1) * 2): REM Segment type
+  let dy = int((x2 - x1 + 1) * h / w) - 1
+  let T =  INT(RND(1) * 2): REM Segment type
   let yb = y1: rem Backup y1
   if t = 0 then y1 = y2 - dy
   if t = 1 then y2 = y1 + dy
