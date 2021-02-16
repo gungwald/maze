@@ -9,8 +9,8 @@ Draws a maze on the Apple IIe DHGR screen
 3. Double click the maze.bat file.
 
 ## Manual
-1. Download and run [Applewin](https://github.com/AppleWin/AppleWin).
+1. Download and run [Applewin](https://github.com/AppleWin/AppleWin) or other Apple IIe emulator.
 2. Insert maze.dsk into Drive 1.
-3. Click the multi-colored Apple button to restart.
+3. Boot the emulator.
 
 ![Example](maze-example.png)
