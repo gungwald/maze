@@ -4,7 +4,7 @@ Draws a maze on the Apple IIe DHGR screen
 # Instructions
 
 ## Windows Setup with Bundled AppleWin Emulator
-1. Download the self-contained release.
+1. Download the self-contained runnable zip [file](https://github.com/gungwald/maze/releases/download/v1.1.0/maze-runnable.zip).
 2. Unzip it.
 3. Double click the maze.bat file.
 
