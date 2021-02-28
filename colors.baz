@@ -7,43 +7,83 @@ REM
 REM cxxxxxx|/////////////////////////>
 REM
 
-let d$ = chr$(4)
-let ret$ = chr$(13)
-let esc$ = chr$(27)
-LET SW = 140 : SH = 192: REM SCREEN WIDTH AND HEIGHT
-LET KBD =  -16384: REM Addr of byte that is neg if key pressed
-LET RL = 78 : RH = 79: REM RNDL AND RNDH
-LET SEED =  PEEK (RL) +  PEEK (RH) * 256: REM GET RND SEED
-LET NA =  RND ( - SEED): REM SEED RANDOM NUM GENERATOR
-print d$;"-dhgr" : rem Load Double Hi-res driver
+{
+	DHGR 140x192 16-Color Mode
+	0: Black
+	1: Magenta
+	2: Dark blue
+	3: Purple
+	4: Dark green
+	5: Grey #1
+	6: Medium blue
+	7: Light blue
+	8: Brown
+	9: Orange
+	10: Grey #2
+	11: Pink
+	12: Green
+	13: Yellow
+	14: Aqua
+	15: White
 
-dim c(15)
-data 15,10,5,13,8,14,12,4,9,1,11,3,7,6,2
-for i = 1 to 15
-	read c(i)
-next
+	Color Wheel:
+	1:  Magenta
+	9:  Orange
+	13: Yellow
+	12: Green
+	4:  Dark green
+	14: Aqua
+	7:  Light blue
+	6:  Medium blue
+	2:  Dark blue
+	3:  Purple
+	11: Pink
+}
 
-&HGR2 : REM FULL SCREEN DOUBLE HIGH RES
+{ green, yellow, orange, red }
+
+D$   = chr$(4)
+RET$ = chr$(13)
+ESC$ = chr$(27)
+SW   = 140 : SH = 192            : REM Screen width and height
+KBD  = -16384                    : REM Byte that is neg if key pressed
+RL   = 78 : RH = 79              : REM RNDL and RNDH
+SEED = peek(RL) + peek(RH) * 256 : REM Get seed for random num generator
+NA   = rnd(SEED)                 : REM Seed random num generator
+
+print D$;"-dhgr"                 : REM Load Double Hi-Res driver
+
+dim c(16)
+data 1,9,13,12,4,14,7,6,2,3,11,-1
+mc = 0 {max colors}
+£nextColor
+  read c(i)
+  if c(i) = -1 then @lastColor
+  mc = mc + 1
+goto @nextColor
+£lastColor
+
+&HGR2    : REM Full screen double hi-res
 &MODE(2) : REM 16-color mode
 
 { Clear screen to black }
 &BCOLOR=0
 &CLEAR
 
-mx = sw - 1
-my = sh - 1
+mx = sw - 1 {max x}
+my = sh - 1 {max y}
 
 cc = 0
 ci = 1
 
 for x = 0 to mx
-	if cc < 8 then cc=cc+1:goto @setColor
-	cc = 0
-	ci = ci + 1
-	if ci > 15 then @checkKeypress
-	£setColor
-	&hcolor = c(ci)
-	&hplot x,0 to x,my
+  if cc < 8 then cc = cc + 1 : goto @setColor
+    cc = 0
+    ci = ci + 1
+    if ci > mc{max color} then @checkKeypress
+  £setColor
+  &hcolor = c(ci)
+  &hplot x,0 to x,my
 next
 
 £checkKeypress
@@ -51,13 +91,13 @@ if peek(kbd) <= 127 then @checkKeypress
 get k$
 
 £exit
-&TEXT 
+&text 
 print "Colors terminated"
 print "Run -FP before running it again to clear memory";
-END
+end
 
 { re = p1 mod p2 }
 £modulus
-let re = p1 - int(p1 / p2) * p2
+re = p1 - int(p1 / p2) * p2
 return
 
