@@ -1,0 +1,63 @@
+REM
+REM cxxxxxx|/////////////////////////>
+REM 
+REM COLORS - DRAWS Colors
+REM AUTHOR - BILL CHATFIELD
+REM 
+REM cxxxxxx|/////////////////////////>
+REM
+
+let d$ = chr$(4)
+let ret$ = chr$(13)
+let esc$ = chr$(27)
+LET SW = 140 : SH = 192: REM SCREEN WIDTH AND HEIGHT
+LET KBD =  -16384: REM Addr of byte that is neg if key pressed
+LET RL = 78 : RH = 79: REM RNDL AND RNDH
+LET SEED =  PEEK (RL) +  PEEK (RH) * 256: REM GET RND SEED
+LET NA =  RND ( - SEED): REM SEED RANDOM NUM GENERATOR
+print d$;"-dhgr" : rem Load Double Hi-res driver
+
+dim c(15)
+data 15,10,5,13,8,14,12,4,9,1,11,3,7,6,2
+for i = 1 to 15
+	read c(i)
+next
+
+&HGR2 : REM FULL SCREEN DOUBLE HIGH RES
+&MODE(2) : REM 16-color mode
+
+{ Clear screen to black }
+&BCOLOR=0
+&CLEAR
+
+mx = sw - 1
+my = sh - 1
+
+cc = 0
+ci = 1
+
+for x = 0 to mx
+	if cc < 8 then cc=cc+1:goto @setColor
+	cc = 0
+	ci = ci + 1
+	if ci > 15 then @checkKeypress
+	£setColor
+	&hcolor = c(ci)
+	&hplot x,0 to x,my
+next
+
+£checkKeypress
+if peek(kbd) <= 127 then @checkKeypress
+get k$
+
+£exit
+&TEXT 
+print "Colors terminated"
+print "Run -FP before running it again to clear memory";
+END
+
+{ re = p1 mod p2 }
+£modulus
+let re = p1 - int(p1 / p2) * p2
+return
+
