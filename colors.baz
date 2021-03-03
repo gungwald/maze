@@ -40,28 +40,26 @@ REM
 	11: Pink
 }
 
-{ green, yellow, orange, red }
-
 D$   = chr$(4)
 RET$ = chr$(13)
 ESC$ = chr$(27)
-SW   = 140 : SH = 192            : REM Screen width and height
-KBD  = -16384                    : REM Byte that is neg if key pressed
-RL   = 78 : RH = 79              : REM RNDL and RNDH
-SEED = peek(RL) + peek(RH) * 256 : REM Get seed for random num generator
+SW   = 140
+SH   = 192    : REM Screen width and height
+KBD  = -16384 : REM Byte that is neg if key pressed
+RL   = 78
+RH   = 79     : REM RNDL and RNDH
+SEED = peek(RL) + peek(RH) * 256 : REM Get seed
 NA   = rnd(SEED)                 : REM Seed random num generator
 
 print D$;"-dhgr"                 : REM Load Double Hi-Res driver
 
 dim c(16)
-data 1,9,13,12,4,14,7,6,2,3,11,-1
-mc = 0 {max colors}
-£nextColor
+data 11
+data 1,9,13,12,4,14,7,6,2,3,11
+read mc {max colors}
+for i = 1 to mc
   read c(i)
-  if c(i) = -1 then @lastColor
-  mc = mc + 1
-goto @nextColor
-£lastColor
+next
 
 &HGR2    : REM Full screen double hi-res
 &MODE(2) : REM 16-color mode
@@ -73,17 +71,11 @@ goto @nextColor
 mx = sw - 1 {max x}
 my = sh - 1 {max y}
 
-cc = 0
-ci = 1
-
-for x = 0 to mx
-  if cc < 8 then cc = cc + 1 : goto @setColor
-    cc = 0
-    ci = ci + 1
-    if ci > mc{max color} then @checkKeypress
-  £setColor
-  &hcolor = c(ci)
-  &hplot x,0 to x,my
+for ci = 1 to mc
+  for x = ci*10 to ci*10+10
+    &hcolor = c(ci)
+    &hplot x,0 to x,my
+  next
 next
 
 £checkKeypress
