@@ -7,47 +7,45 @@ REM
 REM cxxxxxx|/////////////////////////>
 REM
 
-{
-	DHGR 140x192 16-Color Mode
-	0: Black
-	1: Magenta
-	2: Dark blue
-	3: Purple
-	4: Dark green
-	5: Grey #1
-	6: Medium blue
-	7: Light blue
-	8: Brown
-	9: Orange
-	10: Grey #2
-	11: Pink
-	12: Green
-	13: Yellow
-	14: Aqua
-	15: White
-
-	Color Wheel:
-	1:  Magenta
-	9:  Orange
-	13: Yellow
-	12: Green
-	4:  Dark green
-	14: Aqua
-	7:  Light blue
-	6:  Medium blue
-	2:  Dark blue
-	3:  Purple
-	11: Pink
-}
+#	DHGR 140x192 16-Color Mode
+#	0: Black
+#	1: Magenta
+#	2: Dark blue
+#	3: Purple
+#	4: Dark green
+#	5: Grey #1
+#	6: Medium blue
+#	7: Light blue
+#	8: Brown
+#	9: Orange
+#	10: Grey #2
+#	11: Pink
+#	12: Green
+#	13: Yellow
+#	14: Aqua
+#	15: White
+#
+#	Color Wheel:
+#	1:  Magenta
+#	9:  Orange
+#	13: Yellow
+#	12: Green
+#	4:  Dark green
+#	14: Aqua
+#	7:  Light blue
+#	6:  Medium blue
+#	2:  Dark blue
+#	3:  Purple
+#	11: Pink
 
 D$   = chr$(4)
 RET$ = chr$(13)
 ESC$ = chr$(27)
 SW   = 140
-SH   = 192    : REM Screen width and height
-KBD  = -16384 : REM Byte that is neg if key pressed
+SH   = 192                       : REM Screen width and height
+KBD  = -16384                    : REM Byte that is neg if key pressed
 RL   = 78
-RH   = 79     : REM RNDL and RNDH
+RH   = 79                        : REM RNDL and RNDH
 SEED = peek(RL) + peek(RH) * 256 : REM Get seed
 NA   = rnd(SEED)                 : REM Seed random num generator
 
@@ -71,12 +69,21 @@ next
 mx = sw - 1 {max x}
 my = sh - 1 {max y}
 
-for ci = 1 to mc
-  for x = ci*10 to ci*10+10
-    &hcolor = c(ci)
-    &hplot x,0 to x,my
-  next
-next
+&hcolor=c(7)
+&hplot 10,100 to 50,100
+&hcolor=c(8)
+&hplot 51,100 to 60,110
+&hcolor=c(9)
+&hplot 61,110 to 70,125
+&hcolor=c(10)
+&hplot 71,125 to 80,150
+
+#for ci = 1 to mc
+#  for x = ci*10 to ci*10+10
+#    &hcolor = c(ci)
+#    &hplot x,0 to x,my
+#  next
+#next
 
 £checkKeypress
 if peek(kbd) <= 127 then @checkKeypress
